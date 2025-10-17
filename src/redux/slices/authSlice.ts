@@ -5,7 +5,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  token: null,
+  token: typeof window !== 'undefined' ? localStorage.getItem('jwtToken') : null,
 };
 
 export const authSlice = createSlice({
@@ -14,9 +14,11 @@ export const authSlice = createSlice({
   reducers: {
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
+      localStorage.setItem('jwtToken', action.payload);
     },
     logout: (state) => {
       state.token = null;
+      localStorage.removeItem('token');
     },
   },
 });
