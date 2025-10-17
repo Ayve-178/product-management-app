@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@theme {
+  --color-rich-black: #0D1821;
+  --color-anti-flash-white: #EFF1F3;
+  --color-hookers-green: #4E6E5D;
+  --color-lion: #AD8A64;
+  --color-chestnut: #A44A3F;
+  
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
