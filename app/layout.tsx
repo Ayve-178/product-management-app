@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${nunito.variable} ${geistSans.variable} ${geistMono.variable} antialiased w-full bg-anti-flash-white`}
+        className={`${nunito.variable} ${geistSans.variable} ${geistMono.variable} antialiased w-full !bg-anti-flash-white`}
       >
         <StoreProvider>
           <ConditionalNavbar />

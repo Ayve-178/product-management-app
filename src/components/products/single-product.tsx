@@ -1,11 +1,13 @@
 'use client';
 
-import { useGetSingleProductQuery, useDeleteProductMutation, useUpdateProductMutation } from '@/redux/api/apiSlice';
+import { useGetSingleProductQuery, useDeleteProductMutation, useUpdateProductMutation, type Product } from '@/redux/api/apiSlice';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import ProductModal from '@/components/products/product-modal';
 import DeleteConfirmModal from '@/components/products/delete-confirm-modal';
+import { FaEdit, FaRegEdit } from 'react-icons/fa';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 export default function SingleProduct() {
   const { slug } = useParams();
@@ -65,7 +67,7 @@ export default function SingleProduct() {
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Error loading product: {error?.toString()}</p>
+        <p className="text-chestnut">Error loading product: {error?.toString()}</p>
       </div>
     );
   }
@@ -81,25 +83,25 @@ export default function SingleProduct() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 mb-6">
+      <div className="flex justify-end gap-x-3 mb-6">
         <button
           onClick={() => setIsUpdateModalOpen(true)}
-          className="px-4 py-2 bg-hookers-green text-white rounded hover:bg-opacity-90 transition-colors"
+          className=" text-hookers-green cursor-pointer"
         >
-          Update
+          <FaRegEdit className='size-6' />
         </button>
         <button
           onClick={() => setIsDeleteModalOpen(true)}
-          className="px-4 py-2 bg-chestnut text-white rounded hover:bg-opacity-90 transition-colors"
+          className=" text-chestnut cursor-pointer"
         >
-          Delete
+          <AiOutlineDelete className='size-6' />
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Product Images */}
         <div className="space-y-4">
-          <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-200">
+          <div className="relative aspect-square overflow-hidden rounded-lg bg-anti-flash-white">
             {product.images?.[0] ? (
               <Image
                 src={product.images[0]}
@@ -109,7 +111,7 @@ export default function SingleProduct() {
                 unoptimized
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <div className="w-full h-full flex items-center justify-center text-rich-black">
                 No Image
               </div>
             )}
@@ -117,7 +119,7 @@ export default function SingleProduct() {
           {product.images?.length > 1 && (
             <div className="grid grid-cols-4 gap-4">
               {product.images.slice(1).map((image: string, index: number) => (
-                <div key={index} className="relative aspect-square overflow-hidden rounded-lg bg-gray-200">
+                <div key={index} className="relative aspect-square overflow-hidden rounded-lg bg-anti-flash-white">
                   <Image
                     src={image}
                     alt={`${product.name} - ${index + 2}`}
@@ -146,7 +148,9 @@ export default function SingleProduct() {
             <dl className="grid grid-cols-1 gap-4">
               <div>
                 <dt className="text-sm font-medium text-gray-500">Category</dt>
-                <dd className="mt-1 text-sm text-gray-900">{product.categoryId}</dd>
+                <dd className="mt-1 text-sm text-gray-900">
+                  {product.category?.name || 'Unknown Category'}
+                </dd>
               </div>
               {product.specifications?.map((spec: any) => (
                 <div key={spec.name}>

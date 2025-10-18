@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { useLoginMutation } from '@/redux/api/apiSlice';
 import { setToken } from '@/redux/slices/authSlice';
+import { IoWarningOutline } from 'react-icons/io5';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -41,15 +42,18 @@ export default function SignInPage() {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border border-gray-300 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-rich-black"
         />
 
-        {error && <p className="text-chestnut mb-4">{error}</p>}
+        {error && <p className="text-chestnut mb-4 flex items-center gap-x-1">
+          <IoWarningOutline className='size-4.5' />
+          <span>{error}</span>
+          </p>}
 
         <button
           onClick={handleLogin}
           disabled={isLoading}
-          className="w-full bg-rich-black text-white py-2 rounded disabled:opacity-50 cursor-pointer"
+          className="w-full bg-rich-black text-anti-flash-white py-2 rounded disabled:opacity-50 cursor-pointer"
         >
           {isLoading ? 'Signing In...' : 'Sign In'}
         </button>

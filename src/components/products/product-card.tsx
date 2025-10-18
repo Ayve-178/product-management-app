@@ -9,6 +9,7 @@ interface Product {
   price: number;
   images: string[];
   slug: string;
+  category: any;
 }
 
 interface ProductCardProps {
@@ -25,8 +26,8 @@ function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className='shadow-md rounded-md w-[255px] h-[320px] flex flex-col bg-white'>
-      <div className='relative w-full h-[200px] overflow-hidden rounded-t-md'>
+    <div className='shadow-md rounded-md flex flex-col bg-white h-full'>
+      <div className='relative w-full aspect-square overflow-hidden rounded-t-md'>
         {product.images && (<Image 
           src={product.images[0]} 
           alt={product.name} 
@@ -36,7 +37,7 @@ function ProductCard({ product }: ProductCardProps) {
         />)}
       </div>
       
-      <div className='p-4 flex flex-col flex-grow'>
+      <div className='p-4 flex flex-col flex-1'>
         <h2 className='text-lg font-semibold mb-2'>
           {truncateText(product.name, 20)}
         </h2>
@@ -50,7 +51,7 @@ function ProductCard({ product }: ProductCardProps) {
             ৳ {product.price.toFixed(2)}
           </div>
           <button 
-            className='text-hookers-green text-sm font-medium hover:text-lion transition-colors cursor-pointer'
+            className='text-hookers-green underline text-sm font-medium hover:text-lion transition-colors cursor-pointer'
             onClick={() => router.push(`/product/${product.slug}`)}
           >
             View Details

@@ -1,12 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
-interface Product {
+interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
   images: string[];
   categoryId: string;
+  category?: Category;
   specifications?: Array<{
     name: string;
     value: string;

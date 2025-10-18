@@ -10,10 +10,11 @@ import {
 } from "@/redux/api/apiSlice";
 import ProductCard from "@/components/products/product-card";
 import ProductModal from "@/components/products/product-modal";
+import { IoAddCircleOutline } from "react-icons/io5";
 
 function Products() {
   const [page, setPage] = useState(1);
-  const limit = 12;
+  const limit = 15;
   const offset = (page - 1) * limit;
 
   const [searchQ, setSearchQ] = useState("");
@@ -113,7 +114,7 @@ function Products() {
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">
+        <p className="text-chestnut">
           Error loading products: {error?.toString()}
         </p>
       </div>
@@ -129,15 +130,28 @@ function Products() {
   return (
     <div className="mx-auto max-w-[1440px] min-h-screen p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Products</h1>
+        <h1 className="text-2xl font-bold hidden md:block">Products</h1>
 
-        <div className="flex items-center gap-3 ">
+        <div className="flex flex-col mx-auto md:mx-0 md:flex-row items-center gap-3 ">
+            {/* Search Input */}
+          <div className="relative">
+            <input
+              value={searchQ}
+              onChange={(e) => {
+                setSearchQ(e.target.value);
+              }}
+              placeholder="Search products..."
+              className="border rounded px-3 py-2 w-64"
+            />
+          </div>
+
+          <div className="flex items-center gap-x-2">
           {/* Category Dropdown */}
           <div className="relative inline-block">
             <select
               value={selectedCategory}
               onChange={handleCategoryChange}
-              className="border rounded px-3 py-2 bg-white cursor-pointer appearance-none"
+              className="border rounded px-3 py-2 bg-anti-flash-white cursor-pointer appearance-none"
             >
               <option value="" disabled>
                 All Categories
@@ -149,7 +163,7 @@ function Products() {
               ))}
             </select>
             <svg
-              className="absolute right-[5px] top-1/2 -translate-y-1/2 pointer-events-none w-4 h-4 text-gray-600"
+              className="absolute right-[5px] top-1/2 -translate-y-1/2 pointer-events-none w-4 h-4 text-rich-black"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -164,25 +178,15 @@ function Products() {
             </svg>
           </div>
 
-          {/* Search Input */}
-          <div className="relative">
-            <input
-              value={searchQ}
-              onChange={(e) => {
-                setSearchQ(e.target.value);
-              }}
-              placeholder="Search products..."
-              className="border rounded px-3 py-2 w-64"
-            />
-          </div>
-
           {/* Add Product Button */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-rich-black text-anti-flash-white px-3 py-2 rounded hover:bg-hookers-green transition-colors"
+            className="flex items-center gap-x-3 bg-rich-black text-anti-flash-white px-3 py-2 rounded cursor-pointer"
           >
-            Add New Product
+            <IoAddCircleOutline className="size-6.5" />
+            <span>Add</span>
           </button>
+          </div>
         </div>
       </div>
 
@@ -194,13 +198,15 @@ function Products() {
       />
 
       {/* Products Grid */}
-      <div className="flex flex-wrap gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 auto-rows-fr">
         {displayProducts?.length > 0 ? (
           displayProducts.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="h-full">
+              <ProductCard product={product} />
+            </div>
           ))
         ) : (
-          <p className="text-gray-500">No products found.</p>
+          <p className="text-rich-black">No products found.</p>
         )}
       </div>
 
@@ -211,7 +217,7 @@ function Products() {
           <button
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
-            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
             aria-label="Previous page"
           >
             <svg
@@ -237,14 +243,14 @@ function Products() {
               startPage = 1;
             }
             
-            return [0, 1, 2, 3, 4].map((offset) => {
+            return [0, 1, 2].map((offset) => {
               const pageNum = startPage + offset;
               
               return (
                 <button
                   key={offset}
                   onClick={() => setPage(pageNum)}
-                  className={`w-12 h-12 flex items-center justify-center rounded-full font-medium transition-colors ${
+                  className={`w-10 h-10 flex items-center justify-center rounded-full font-medium transition-colors ${
                     pageNum === page
                       ? "bg-rich-black text-white"
                       : "border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
@@ -260,7 +266,7 @@ function Products() {
           <button
             onClick={() => setPage((prev) => prev + 1)}
             disabled={!hasMoreProducts}
-            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
             aria-label="Next page"
           >
             <svg
