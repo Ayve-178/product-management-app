@@ -34,9 +34,8 @@ export default function SingleProduct() {
         name,
         description,
       }).unwrap();
-      
       setIsUpdateModalOpen(false);
-      router.refresh(); // Refresh the page to show updated data
+      router.push(`/products`);
     } catch (err) {
       console.error('Failed to update product:', err);
       alert('Failed to update product');

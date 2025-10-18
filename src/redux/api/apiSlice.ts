@@ -15,6 +15,7 @@ interface Product {
 
 export const apiSlice = createApi({
   reducerPath: "api",
+  tagTypes: ['Products'],
   baseQuery: fetchBaseQuery({
     baseUrl: "https://api.bitechx.com",
     prepareHeaders: (headers, { getState }) => {
@@ -48,12 +49,14 @@ export const apiSlice = createApi({
         url: `/products?offset=${offset}&limit=${limit}`,
         method: "GET",
       }),
+      providesTags: ['Products'],
     }),
     searchProductsbyName: builder.query<any[], { name: string }>({
       query: ({ name }) => ({
         url: `/products/search?searchedText=${name}`,
         method: "GET",
       }),
+      providesTags: ['Products'],
     }),
     getProductsbyCategory: builder.query<any[], { categoryId: string }>({
       query: ({ categoryId }) => ({
@@ -76,25 +79,24 @@ export const apiSlice = createApi({
         method: "POST",
         body,
       }),
+      invalidatesTags: ['Products'],
     }),
     getSingleProduct: builder.query<Product, { slug: string }>({
       query: ({ slug }) => ({
         url: `/products/${slug}`,
         method: "GET",
       }),
+      providesTags: (result, error, { slug }) => 
+        result ? [{ type: 'Products', id: slug }] : ['Products'],
     }),
-    updateProduct: builder.mutation<
-      any,
-      {
-        id: string;
-        name: string;
-        description: string;
-      }>({
-      query: ({ id, name, description }) => ({
+
+    updateProduct: builder.mutation<Product, { id: string; name: string; description: string }>({
+      query: ({ id, ...patch }) => ({
         url: `/products/${id}`,
         method: "PUT",
-        body: { name, description},
+        body: patch,
       }),
+      invalidatesTags: ['Products'],
     }),
     deleteProduct: builder.mutation<{ success: boolean }, { id: string }>({
       query: ({ id, ...rest }) => ({

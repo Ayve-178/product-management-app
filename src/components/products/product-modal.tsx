@@ -2,6 +2,18 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { z } from 'zod';
+import { useGetCategoriesQuery } from '@/redux/api/apiSlice';
+
+const productSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  price: z.number().positive("Price must be a positive number"),
+  categoryId: z.string().min(1, "Category is required"),
+  images: z.array(z.string().url("Must be a valid URL")).min(1, "At least one image URL is required")
+});
+
+type ProductFormData = z.infer<typeof productSchema>;
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -20,7 +32,11 @@ export default function ProductModal({
 }: ProductModalProps) {
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
+  
+  // Fetch categories
+  const { data: categories = [] } = useGetCategoriesQuery();
 
   // Populate form when in update mode
   useEffect(() => {
@@ -29,6 +45,8 @@ export default function ProductModal({
     } else {
       setImageUrls([""]);
     }
+    // Clear errors when modal opens/closes
+    setErrors({});
   }, [mode, product, isOpen]);
 
   function addImageUrl() {
@@ -45,12 +63,34 @@ export default function ProductModal({
 
   async function handleFormSubmit(formData: FormData) {
     if (!onSubmit) return;
+    setErrors({});
     
-    setIsSubmitting(true);
     try {
+      const validationData: ProductFormData = {
+        name: formData.get('name') as string,
+        description: formData.get('description') as string,
+        price: parseFloat(formData.get('price') as string),
+        categoryId: formData.get('categoryId') as string,
+        images: imageUrls.filter(url => url.trim() !== "")
+      };
+
+      const result = productSchema.safeParse(validationData);
+
+      if (!result.success) {
+        const formattedErrors: Record<string, string> = {};
+        result.error.issues.forEach(error => {
+          const path = error.path[0].toString();
+          formattedErrors[path] = error.message;
+        });
+        setErrors(formattedErrors);
+        return;
+      }
+
+      setIsSubmitting(true);
       await onSubmit(formData);
     } catch (err) {
       console.error('Form submission error:', err);
+      setErrors({ submit: 'Failed to submit form. Please try again.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -84,19 +124,26 @@ export default function ProductModal({
               name="name"
               required
               defaultValue={mode === 'update' ? product?.name : ''}
-              className="w-full border rounded px-3 py-2"
+              className={`w-full border rounded px-3 py-2 ${errors.name ? 'border-red-500' : ''}`}
               placeholder="Product name"
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">Description</label>
             <textarea
               name="description"
+              required
               defaultValue={mode === 'update' ? product?.description : ''}
-              className="w-full border rounded px-3 py-2 h-24"
+              className={`w-full border rounded px-3 py-2 h-24 ${errors.description ? 'border-red-500' : ''}`}
               placeholder="Product description"
             />
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+            )}
           </div>
 
           <div>
@@ -108,21 +155,33 @@ export default function ProductModal({
               required
               defaultValue={mode === 'update' ? product?.price : ''}
               readOnly={mode === 'update'}
-              className={`w-full border rounded px-3 py-2 ${mode === 'update' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+              className={`w-full border rounded px-3 py-2 ${mode === 'update' ? 'bg-gray-100 cursor-not-allowed' : ''} ${errors.price ? 'border-red-500' : ''}`}
               placeholder="0.00"
             />
+            {errors.price && (
+              <p className="text-red-500 text-sm mt-1">{errors.price}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Category ID</label>
-            <input
+            <label className="block text-sm font-medium mb-1">Category</label>
+            <select
               name="categoryId"
               required
               defaultValue={mode === 'update' ? product?.categoryId : ''}
-              readOnly={mode === 'update'}
-              className={`w-full border rounded px-3 py-2 ${mode === 'update' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-              placeholder="Category ID"
-            />
+              disabled={mode === 'update'}
+              className={`w-full border rounded px-3 py-2 ${mode === 'update' ? 'bg-gray-100 cursor-not-allowed' : ''} ${errors.categoryId ? 'border-red-500' : ''}`}
+            >
+              <option value="">Select a category</option>
+              {categories.map((category: any) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+            {errors.categoryId && (
+              <p className="text-red-500 text-sm mt-1">{errors.categoryId}</p>
+            )}
           </div>
 
           <div>
@@ -146,7 +205,7 @@ export default function ProductModal({
                   value={url}
                   onChange={(e) => updateImageUrl(index, e.target.value)}
                   readOnly={mode === 'update'}
-                  className={`flex-1 border rounded px-3 py-2 ${mode === 'update' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  className={`flex-1 border rounded px-3 py-2 ${mode === 'update' ? 'bg-gray-100 cursor-not-allowed' : ''} ${errors.images ? 'border-red-500' : ''}`}
                   placeholder="Image URL"
                 />
                 {mode === 'create' && imageUrls.length > 1 && (
@@ -160,6 +219,9 @@ export default function ProductModal({
                 )}
               </div>
             ))}
+            {errors.images && (
+              <p className="text-red-500 text-sm mt-1">{errors.images}</p>
+            )}
           </div>
 
           <div className="flex justify-end gap-2 mt-6">
