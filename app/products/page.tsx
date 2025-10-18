@@ -50,7 +50,7 @@ function Products() {
     (state, newProduct: any) => [...state, newProduct]
   );
 
-  const { data: searchResults = [], isFetching: isSearching } =
+  const { data: searchResults = []  } =
     useSearchProductsbyNameQuery(
       { name: debounced },
       { skip: debounced.length < 1 }

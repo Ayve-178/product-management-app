@@ -15,7 +15,7 @@ export default function SingleProduct() {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
-  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
 
   const handleUpdate = async (formData: FormData) => {
     if (!product) return;
