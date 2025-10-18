@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { logout } from '@/redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
+import { logout } from '@/redux/slices/authSlice';
 
 function Navbar() {
   const [showModal, setShowModal] = useState(false);

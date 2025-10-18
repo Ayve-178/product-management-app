@@ -26,7 +26,7 @@ export default function SignInPage() {
       const result = await login({ email }).unwrap();
       dispatch(setToken(result.token));
       localStorage.setItem('jwtToken', result.token);
-      router.push('/');
+      router.push('/products');
     } catch (err: any) {
       setError(err?.data?.message || 'Login failed');
     }

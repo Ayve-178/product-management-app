@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/redux/StoreProvider";
 import Navbar from "@/components/layout/navbar";
+import ConditionalNavbar from "@/components/layout/conditional-navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,7 @@ export default function RootLayout({
         className={`${nunito.variable} ${geistSans.variable} ${geistMono.variable} antialiased w-full bg-anti-flash-white`}
       >
         <StoreProvider>
-          <Navbar />
+          <ConditionalNavbar />
           {children}
         </StoreProvider>
       </body>
